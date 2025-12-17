@@ -51,7 +51,11 @@ def get_todo(todo_id):
 # PUT /todo/1 - markera som klar
 @app.route('/todo/<int:todo_id>', methods=['PUT'])
 def mark_completed(todo_id):
-  return "mark complete"
+  with sqlite3.connect('todo.db') as conn:
+    cursor = conn.cursor()
+    cursor.execute('UPDATE todos SET completed = ? WHERE id = ?', (True, todo_id))
+    conn.commit()
+  return jsonify({'id': todo_id, 'completed': True}), 200
 
 # DELETE /todo/1 - radera en uppgift
 @app.route('/todo/<int:todo_id>', methods=['DELETE'])
