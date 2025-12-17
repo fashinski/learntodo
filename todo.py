@@ -1,5 +1,5 @@
 
-from flask import Flask
+from flask import Flask, jsonify, request
 import sqlite3
 
 app = Flask(__name__)
@@ -19,7 +19,15 @@ init_db()
 # POST /todo - lägga till en uppgift
 @app.route('/todo', methods=['POST'])
 def create_todo():
-  return "post todo"
+  data = request.get_json()
+  title = data.get('title')
+  with sqlite3.connect('todo.db') as conn:
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO todos (title, completed) VALUES (?, ?)', (title, False))
+    conn.commit()
+    new_task_id = cursor.lastrowid
+  return jsonify({'id': new_task_id, 'title': title, 'completed': False}), 201
+
 
 # GET /todo - hämta alla uppgifter
 @app.route('/todo', methods=['GET'])
