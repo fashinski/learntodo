@@ -33,7 +33,7 @@ def create_todo():
 def get_todos():
   with sqlite3.connect('todo.db') as conn:
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM todos')
+    cursor.execute('SELECT * FROM todos WHERE completed = 0')
     todos = cursor.fetchall()
     todo_list = [ {'id': row[0], 'title': row[1], 'completed': bool(row[2]) } for row in todos ]
   return jsonify(todo_list), 200
